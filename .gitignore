@@ -1,0 +1,10 @@
+*.sqlite
+
+build/
+nbbuild/
+dist/
+nbdist/
+nbproject/private/
+nbactions.xml
+.nb-gradle/
+nbproject/cfg_hints.xml
