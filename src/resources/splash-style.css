@@ -1,0 +1,29 @@
+
+.splash {
+  -fx-padding: 8; 
+  -fx-background-color: transparent;
+}
+
+.splash .outer {
+  -fx-background-color: transparent;
+}
+
+.splash .container {
+}
+
+.splash .progress {
+  -fx-background: orange;
+  
+  -fx-border: 0;
+}
+
+.splash .text {
+  -fx-fill: orange;
+  -fx-font-weight: bold;
+  -fx-font-size: 18;
+  
+  -fx-border-width: 1;
+  -fx-border-color: red;
+  
+  -fx-alignment: center;
+}
