@@ -12,13 +12,11 @@
 }
 
 .splash .progress {
-  -fx-background: orange;
   
   -fx-border: 0;
 }
 
 .splash .text {
-  -fx-fill: orange;
   -fx-font-weight: bold;
   -fx-font-size: 18;
   

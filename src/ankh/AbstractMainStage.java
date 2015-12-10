@@ -1,13 +1,15 @@
 package ankh;
 
-import ankh.config.Config;
 import ankh.ioc.IoC;
 import ankh.ioc.annotations.DependencyInjection;
 import ankh.pages.Page;
 import ankh.pages.AbstractPageManager;
 import ankh.tasks.NotificationPane;
+import ankh.config.Config;
 import com.sun.javafx.tk.Toolkit;
 import java.util.function.Supplier;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -64,8 +66,8 @@ public class AbstractMainStage extends AbstractPageManager {
   }
 
   public Stage constructStage() {
-    stage = new Stage(StageStyle.DECORATED);
-    stage.setTitle(application.appTitle());
+    stage = new Stage(StageStyle.DECORATED); //UNDECORATED
+    stage.titleProperty().bind(titleProperty());
     stage.getIcons().addAll(new Image(AbstractApp.icon(32)), new Image(AbstractApp.icon(16)));
     stage.setScene(constructScene());
     return stage;
@@ -86,14 +88,33 @@ public class AbstractMainStage extends AbstractPageManager {
   @Override
   public boolean navigateTo(Class<? extends Page> id, Object... args) {
     boolean navigated = super.navigateTo(id, args);
-    if (navigated)
-      setRoot(getCurrent().getNode());
+    if (navigated) {
+      Page current = getCurrent();
+      setRoot(current.getNode());
+      titleProperty().bind(current.titleProperty());
+    }
 
     return navigated;
   }
 
   public void navigateOut() {
     IoC.drop();
+  }
+
+  private StringProperty title;
+
+  public String getTitle() {
+    return titleProperty().get();
+  }
+
+  public void setTitle(String title) {
+    titleProperty().set(title);
+  }
+
+  public StringProperty titleProperty() {
+    if (title == null)
+      title = new SimpleStringProperty(this, "title", application.appTitle());
+    return title;
   }
 
 }

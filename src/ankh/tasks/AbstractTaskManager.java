@@ -109,15 +109,18 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
   public void error(String message, Throwable e) {
     notificationPane.prepared(message, (repop) -> {
       String old = getText();
+
+      textProperty().unbind();
+      progressProperty().unbind();
       setText(message);
+      setProgress(0);
+
       addButtonToStatusBar(new ImageView(alert), (button) -> {
         button.setColor(Color.TRANSPARENT);
         button.setOnAction((h) -> {
-          try {
-            setText(old);
-          } catch (Exception ex) {
+          textProperty().unbind();
+          setText(old);
 
-          }
           removeNodeFromStatusBar(button);
           D.error(message, e);
 

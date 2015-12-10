@@ -5,7 +5,6 @@ package ankh;
 import javafx.animation.FadeTransition;
 import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
-import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -52,18 +51,20 @@ public class Splash extends VBox {
   public void init() {
     getStyleClass().add("splash");
 
-    Pane content = new VBox();
+    Pane content = new Pane();
+
     content.getStyleClass().add("container");
 
     loadProgress = new ProgressBar();
     loadProgress.getStyleClass().add("progress");
 
     if (splashView != null) {
+      splashView.getStyleClass().add("splash-view");
       loadProgress.setPrefWidth(splashView.getLayoutBounds().getWidth());
 
       Pane gap = new Pane();
       gap.setPrefHeight(10);
-      content.getChildren().addAll(splashView, gap);
+      content.getChildren().addAll(splashView);
     } else {
       loadProgress.setPrefWidth(DEF_WIDTH - 20);
       content.setPrefWidth(DEF_WIDTH);
