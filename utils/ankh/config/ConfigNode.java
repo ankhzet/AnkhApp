@@ -1,116 +1,27 @@
 package ankh.config;
 
-import ankh.annotations.DependenciesInjected;
-import ankh.annotations.DependencyInjection;
-import ankh.AbstractApp;
 import ankh.utils.Strings;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.HashMap;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 
 /**
  *
  * @author Ankh Zet (ankhzet@gmail.com)
  */
-public class Config extends ConfigNode {
+public class ConfigNode extends HashMap<String, Object> {
 
-  @DependencyInjection()
-  protected AbstractApp app;
-
-  protected String path;
-  protected String from;
-
-  private boolean save = true;
-
-  public Config(String src, String def) {
-    path = src;
-    from = def;
-  }
-
-  public Config(Parser p) {
-    readFromParser(p);
-  }
-
-  public String resolveAppDir(String param, String def) {
-    return app.resolveDir(get(param, def));
-  }
-
-  public String resolveAppDir(String param) {
-    return resolveAppDir(param, app.appName());
-  }
-
-  public Config resolve() throws Exception {
-    String realPath = app.cfgFilePath(path);
-    File cfg = new File(realPath);
-    if (!cfg.exists()) {
-      cfg.getParentFile().mkdirs();
-
-      InputStream template;
-      if ((from == null) || null == (template = app.resourceStream(new File(app.cfgFilePath(from)).getName())))
-        Files.write(cfg.toPath(), "{}".getBytes(), StandardOpenOption.CREATE);
-      else
-        try {
-          Files.copy(template, cfg.toPath());
-        } catch (IOException e) {
-          throw new Exception(String.format("Failed do copy template config file to \"%s\"", path), e);
-        }
-    }
-
-    path = realPath;
-    return this;
-  }
-
-  @Override
-  public void save() {
-    if (!save)
-      return;
-
-    assert path != null;
-
-    try (Writer w = new FileWriter(path)) {
-      w.write(toString());
-    } catch (Throwable ex) {
-      throw new RuntimeException("Failed to save config: " + ex.getLocalizedMessage(), ex);
-    }
-  }
-
-  @Override
-  protected void readFromParser(Parser p) {
-    try {
-      save = false;
-      super.readFromParser(p);
-    } finally {
-      save = true;
-    }
-  }
-
-  @DependenciesInjected()
-  private void diInjected() throws Exception {
-    if (path != null) {
-      path = app.cfgFilePath(path);
-      if (!new File(path).exists())
-        resolve();
-
-      readFromParser(new Parser(path));
-    }
-  }
-
-}
-
-class ConfigNode extends HashMap<String, Object> {
+  protected boolean save = true;
 
   ConfigNode parent;
+
+  public ConfigNode() {
+  }
 
   public ConfigNode(ConfigNode parent) {
     this.parent = parent;
   }
 
-  public ConfigNode() {
+  public ConfigNode(Parser parser) {
+    readFromParser(parser);
   }
 
   public boolean has(String key) {
@@ -157,15 +68,17 @@ class ConfigNode extends HashMap<String, Object> {
   }
 
   @Override
-  public Object put(String key, Object value) {
+  public final Object put(String key, Object value) {
     Object was = super.put(key, value);
 
-    save();
+    if (value != was && (was == null || !was.equals(value)))
+      save();
 
     return was;
   }
 
   protected void readFromParser(Parser p) {
+    save = false;
     try {
       p.checkAndNext("{");
 
@@ -187,11 +100,14 @@ class ConfigNode extends HashMap<String, Object> {
       p.checkAndNext("}");
     } catch (Throwable ex) {
       throw new RuntimeException("Failed to parse config: " + ex.getLocalizedMessage(), ex);
+    } finally {
+      save = true;
     }
   }
 
   public void save() {
-    parent.save();
+    if (save)
+      parent.save();
   }
 
   @Override
@@ -203,16 +119,19 @@ class ConfigNode extends HashMap<String, Object> {
       Object value = super.get(key);
       if (value == null)
         continue;
+      
+      if (value instanceof ConfigNode && ((ConfigNode) value).isEmpty())
+        continue;
 
       sb.append("\t")
-      .append(key);
+        .append(key);
 
       if (value instanceof ConfigNode)
         sb.append(tab(value.toString()));
       else
         sb.append(" = ")
-        .append(encode(value))
-        .append(";");
+          .append(encode(value))
+          .append(";");
 
       sb.append("\r\n");
     }

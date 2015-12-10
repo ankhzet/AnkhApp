@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -13,13 +12,14 @@ import java.util.function.Supplier;
  */
 public class Utils {
 
-  public static void open(String command) throws Exception {
-    Runtime.getRuntime().exec(command);
+  public static void open(String command, Object... args) throws Exception {
+    Runtime.getRuntime().exec(String.format(command, args));
   }
 
   public interface PassThrough<Type> {
 
     Type pass(Type what);
+
   }
 
   public static <Type> Type pass(Type what, PassThrough<Type> callable) {
@@ -34,25 +34,50 @@ public class Utils {
     return callable.pass(what);
   }
 
-  public interface ThrowsRunner {
+  public interface ThrowsRunner<V> {
+
+    V run() throws Throwable;
+
+  }
+
+  public interface VoidThrowsRunner {
 
     void run() throws Throwable;
 
   }
 
-  public static boolean safely(ThrowsRunner r) {
+  public interface ThrowableConsumer {
+
+    public void accept(Throwable t);
+
+  }
+
+  public static boolean safely(VoidThrowsRunner r) {
     return safely(r, null);
   }
 
-  public static boolean safely(ThrowsRunner r, Consumer<Throwable> onError) {
-    try {
+  public static boolean safely(VoidThrowsRunner r, ThrowableConsumer onError) {
+    Boolean result = safely(() -> {
       r.run();
       return true;
+    }, onError);
+    return result != null ? result : false;
+  }
+
+  public static <V> V safely(ThrowsRunner<V> r) {
+    return safely(r, null);
+  }
+
+  public static <V> V safely(ThrowsRunner<V> r, ThrowableConsumer onError) {
+    try {
+      return r.run();
     } catch (Throwable e) {
       e.printStackTrace();
+
       if (onError != null)
         onError.accept(e);
-      return false;
+
+      return null;
     }
   }
 

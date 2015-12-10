@@ -1,6 +1,6 @@
 package ankh;
 
-import ankh.IoC;
+import ankh.ioc.IoC;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.Semaphore;

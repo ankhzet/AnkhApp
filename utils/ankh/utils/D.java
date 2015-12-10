@@ -1,6 +1,5 @@
 package ankh.utils;
 
-import ankh.Launcher;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -39,7 +38,7 @@ public class D {
 
   public static void error(String title, Throwable e) {
     Dialogs.create()
-    .owner(Launcher.mainStage().stage)
+//    .owner(Launcher.mainStage().stage)
     .styleClass(Dialog.STYLE_CLASS_CROSS_PLATFORM)
     .title(title)
     .showException(e);

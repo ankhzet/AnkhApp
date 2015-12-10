@@ -1,7 +1,8 @@
 package ankh;
 
-import ankh.annotations.DependencyInjection;
 import ankh.config.Config;
+import ankh.ioc.IoC;
+import ankh.ioc.annotations.DependencyInjection;
 import ankh.pages.Page;
 import ankh.pages.AbstractPageManager;
 import ankh.tasks.NotificationPane;

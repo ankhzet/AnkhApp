@@ -1,6 +1,6 @@
 package ankh.pages;
 
-import ankh.IoC;
+import ankh.ioc.IoC;
 import ankh.tasks.AbstractTaskManager;
 import ankh.tasks.NotificationPane;
 import ankh.tasks.TaskManager;
