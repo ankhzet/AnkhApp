@@ -5,6 +5,10 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>AnkhApp</name>
             <source-roots>
+                <root id="src.utils.dir"/>
+                <root id="src.ioc.dir"/>
+                <root id="src.db.dir"/>
+                <root id="src.http.dir"/>
                 <root id="src.dir"/>
             </source-roots>
             <test-roots>
@@ -13,7 +17,31 @@
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
+                <foreign-project>AnkhDB</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>AnkhHTTP</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
                 <foreign-project>AnkhIoC</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>AnkhUtils</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
