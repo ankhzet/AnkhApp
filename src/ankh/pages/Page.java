@@ -7,6 +7,7 @@ package ankh.pages;
 
 import javafx.concurrent.Task;
 import ankh.tasks.TaskManager;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 
 /**
@@ -15,9 +16,11 @@ import javafx.scene.Node;
  */
 public interface Page {
 
+  String pathFragment();
+  
   Node getNode();
 
-  String title();
+  StringProperty titleProperty();
 
   void setNavigator(PageNavigator navigator);
 

@@ -48,7 +48,7 @@ public class Breadcrumbs extends BreadCrumbBar<Breadcrumb> {
       setSelectedCrumb(null);
       TreeItem<Breadcrumb> last = null;
       for (Map.Entry<Page, NavPathPoint<Page, Object[]>> entry : navPath.entrySet())
-        last = add(Breadcrumbs.crumb(entry.getKey().title(), () -> {
+        last = add(Breadcrumbs.crumb(entry.getKey().pathFragment(), () -> {
           handler.accept(entry.getValue());
         }));
 

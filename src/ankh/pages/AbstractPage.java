@@ -4,6 +4,9 @@ import javafx.concurrent.Task;
 import ankh.tasks.TaskManager;
 import ankh.utils.Utils;
 import java.util.function.Supplier;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.scene.Node;
 import org.controlsfx.control.action.Action;
 
 /**
@@ -15,6 +18,33 @@ public abstract class AbstractPage implements Page, TaskManager {
   private PageNavigator navigator;
   private TaskManager taskManager;
   private Object[] navData;
+
+  private Node node;
+
+  private StringProperty title;
+
+  public String getTitle() {
+    return titleProperty().get();
+  }
+
+  public void setTitle(String title) {
+    titleProperty().set(title);
+  }
+
+  public StringProperty titleProperty() {
+    if (title == null)
+      title = new SimpleStringProperty(this, "title", null);
+    return title;
+  }
+
+  @Override
+  public Node getNode() {
+    if (node == null)
+      node = buildNode();
+    return node;
+  }
+
+  protected abstract Node buildNode();
 
   @Override
   public void setNavigator(PageNavigator navigator) {
@@ -33,11 +63,15 @@ public abstract class AbstractPage implements Page, TaskManager {
   @Override
   public boolean navigateIn(Page from, Object... args) {
     navData = args;
+    ready();
     return true;
   }
 
   @Override
   public boolean navigateOut(Page to) {
+    node = null;
+    dissmissNotifier();
+    done();
     return true;
   }
 
@@ -47,6 +81,14 @@ public abstract class AbstractPage implements Page, TaskManager {
 
   public <Type> Type navDataAtIndex(int index, Supplier<Type> def) {
     return Utils.isAnyAt(index, navData, def);
+  }
+
+  public <Type> Type navDataAtIndex(int index) {
+    return Utils.isAnyAt(index, navData, null);
+  }
+
+  public boolean proceed(Class<? extends Page> id, Object... args) {
+    return getNavigator().navigateTo(id, args);
   }
 
   @Override
@@ -70,6 +112,12 @@ public abstract class AbstractPage implements Page, TaskManager {
   public void error(String message, Throwable e) {
     if (taskManager != null)
       taskManager.error(message, e);
+  }
+
+  protected void ready() {
+  }
+
+  protected void done() {
   }
 
 }
