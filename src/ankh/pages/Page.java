@@ -5,7 +5,7 @@
  */
 package ankh.pages;
 
-import ankh.tasks.CustomTask;
+import javafx.concurrent.Task;
 import ankh.tasks.TaskManager;
 import javafx.scene.Node;
 
@@ -27,6 +27,6 @@ public interface Page {
 
   void setTaskManager(TaskManager manager);
 
-  boolean perform(CustomTask task);
+  boolean perform(Task<?> task);
 
 }

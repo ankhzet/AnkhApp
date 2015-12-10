@@ -5,6 +5,7 @@
  */
 package ankh.tasks;
 
+import javafx.concurrent.Task;
 import org.controlsfx.control.action.Action;
 
 /**
@@ -13,7 +14,7 @@ import org.controlsfx.control.action.Action;
  */
 public interface TaskManager {
 
-  boolean perform(CustomTask<?> task);
+  boolean perform(Task<?> task);
 
   void notify(String message, Action... actions);
 

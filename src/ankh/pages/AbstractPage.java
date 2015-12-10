@@ -1,6 +1,6 @@
 package ankh.pages;
 
-import ankh.tasks.CustomTask;
+import javafx.concurrent.Task;
 import ankh.tasks.TaskManager;
 import ankh.utils.Utils;
 import java.util.function.Supplier;
@@ -50,7 +50,7 @@ public abstract class AbstractPage implements Page, TaskManager {
   }
 
   @Override
-  public boolean perform(CustomTask task) {
+  public boolean perform(Task<?> task) {
     return (taskManager != null) && taskManager.perform(task);
   }
 

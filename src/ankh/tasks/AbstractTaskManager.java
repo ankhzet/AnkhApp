@@ -3,6 +3,7 @@ package ankh.tasks;
 import ankh.AbstractApp;
 import ankh.utils.D;
 import java.util.function.Consumer;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -28,14 +29,15 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
   }
 
   @Override
-  public boolean perform(CustomTask<?> task) {
+  public boolean perform(Task<?> task) {
     textProperty().bind(task.messageProperty());
     progressProperty().bind(task.progressProperty());
 
     addButtonToStatusBar("X", (button) -> {
       button.setColor(Color.ORANGE);
       button.setOnAction((l) -> task.cancel());
-      task.onStateChange((n) -> {
+
+      task.stateProperty().addListener((l, o, n) -> {
         String msg = task.getMessage();
         switch (n) {
         case READY:
@@ -48,7 +50,7 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
           break;
 
         case FAILED:
-          error(msg, task.unwrapException());
+          error(msg, CustomTask.unwrapException(task));
         }
         unbindStatusBar(msg, button);
       });

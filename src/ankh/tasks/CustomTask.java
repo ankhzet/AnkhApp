@@ -1,6 +1,5 @@
 package ankh.tasks;
 
-import java.util.function.Consumer;
 import javafx.concurrent.Task;
 
 /**
@@ -9,13 +8,9 @@ import javafx.concurrent.Task;
  */
 public abstract class CustomTask<V> extends Task<V> {
 
-  public void onStateChange(Consumer<State> listener) {
-    stateProperty().addListener((l, o, n) -> listener.accept(n));
-  }
-
-  public Throwable unwrapException() {
+  public static Throwable unwrapException(Task task) {
     Throwable r;
-    Throwable e = r = getException();
+    Throwable e = r = task.getException();
 
     while ((e != null) && (e.getMessage() == null))
       e = e.getCause();
