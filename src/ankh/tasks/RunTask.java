@@ -3,6 +3,7 @@ package ankh.tasks;
 /**
  *
  * @author Ankh Zet (ankhzet@gmail.com)
+ * @param <V>
  */
 public class RunTask<V> extends CustomTask<V> {
 
@@ -18,12 +19,12 @@ public class RunTask<V> extends CustomTask<V> {
     updateTitle(title);
     updateMessage(title);
     this.runnable = runnable;
+    setComplete("Done...");
+    setFailed("Failed{1}");
   }
 
   public RunTask(Runnable runnable) {
     this("Working...", runnable);
-    setComplete("Done...");
-    setFailed("Failed");
   }
 
   public final RunTask setFailed(String failed) {
@@ -38,12 +39,13 @@ public class RunTask<V> extends CustomTask<V> {
 
   @Override
   protected V call() throws Exception {
-    V result;
+    V result = null;
     try {
       result = runnable.run();
       updateMessage(complete);
     } catch (Exception e) {
-      updateMessage(failed);
+      updateMessage(failed.replace("{1}", ": " + e.getLocalizedMessage()));
+
       throw e;
     }
     return result;

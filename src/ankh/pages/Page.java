@@ -5,9 +5,9 @@
  */
 package ankh.pages;
 
-import javafx.concurrent.Task;
 import ankh.tasks.TaskManager;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.scene.Node;
 
 /**
