@@ -38,7 +38,11 @@ public class ServerRequest extends AbstractServerRequest {
 
   @Override
   public Response execute() throws IOException {
-    return httpClient.execute(this);
+    try {
+      return httpClient.execute(this);
+    } finally {
+      httpClient.done(this);
+    }
   }
 
   @Override
@@ -48,8 +52,8 @@ public class ServerRequest extends AbstractServerRequest {
 
   @Override
   protected void finalize() throws Throwable {
-    super.finalize();
     httpClient.done(this);
+    super.finalize();
   }
 
   @Override
