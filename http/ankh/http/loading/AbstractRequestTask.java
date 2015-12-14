@@ -1,6 +1,8 @@
 package ankh.http.loading;
 
 import ankh.http.query.ResourceQuery;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 
 /**
@@ -17,6 +19,8 @@ public abstract class AbstractRequestTask<Source, Resource> extends Task<Resourc
   protected Resource call() throws Exception {
     ResourceQuery<Source, Resource> resourceQuery = query();
 
+    setQuery(resourceQuery);
+
     resourceQuery.progressProperty().addListener((h, o, n) -> {
       double progress = n.doubleValue();
 
@@ -30,16 +34,42 @@ public abstract class AbstractRequestTask<Source, Resource> extends Task<Resourc
     Resource result = resourceQuery.executeQuery();
     if (result == null) {
       resourceQuery.rethrow();
-      
+
       throw new Exception("Request failed");
     }
 
     return result;
   }
 
+  @Override
+  public boolean cancel(boolean mayInterruptIfRunning) {
+    ResourceQuery<Source, Resource> query = getQuery();
+    if (query != null)
+      query.cancel();
+
+    return super.cancel(mayInterruptIfRunning);
+  }
+
   protected abstract ResourceQuery<Source, Resource> query();
 
   protected void loaded() {
+  }
+
+  private ObjectProperty<ResourceQuery<Source, Resource>> queryProperty;
+
+  public ObjectProperty<ResourceQuery<Source, Resource>> queryProperty() {
+    if (queryProperty == null)
+      queryProperty = new SimpleObjectProperty<>(this, "query", null);
+
+    return queryProperty;
+  }
+
+  public ResourceQuery<Source, Resource> getQuery() {
+    return (queryProperty == null) ? null : queryProperty.get();
+  }
+
+  private void setQuery(ResourceQuery<Source, Resource> query) {
+    queryProperty().set(query);
   }
 
 }
