@@ -32,7 +32,7 @@ public class FileStreamCache extends AbstractCache<InputStream, Long> {
   @Override
   public InputStream get(String key) throws IOException {
     File file = underlyingCache.get(key);
-    if (file == null)
+    if (file == null || file.length() <= 0)
       return null;
 
     return new BufferedInputStream(new FileInputStream(file));

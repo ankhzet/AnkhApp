@@ -10,6 +10,8 @@ import java.io.File;
  */
 public class FileCache extends AbstractCache<File, File> {
 
+  public static long DEFAULT_TTL = 1000 * 60 * 60 * 24 * 30;
+
   public String directory;
 
   public FileCache(String directory) {
@@ -45,7 +47,7 @@ public class FileCache extends AbstractCache<File, File> {
 
     if (file.exists()) {
       if (ttl == 0)
-        ttl = 1000 * 60 * 60 * 24 * 30;
+        ttl = DEFAULT_TTL;
 
       file.setLastModified(System.currentTimeMillis() + ttl);
     }

@@ -37,7 +37,7 @@ public abstract class AbstractPage implements Page, TaskManager {
 
   public StringProperty titleProperty() {
     if (title == null)
-      title = new SimpleStringProperty(this, "title", null);
+      title = new SimpleStringProperty(this, "title", pathFragment());
     return title;
   }
 
@@ -67,6 +67,7 @@ public abstract class AbstractPage implements Page, TaskManager {
   @Override
   public boolean navigateIn(Page from, Object... args) {
     navData = args;
+    buildNode();
     ready();
     return true;
   }

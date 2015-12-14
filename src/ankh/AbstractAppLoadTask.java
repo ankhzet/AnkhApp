@@ -47,7 +47,7 @@ public class AbstractAppLoadTask extends Task<AbstractMainStage> {
       map.put("Preparing...", prepare);
     
     map.put("Loading main stage...", (Runnable) () -> {
-      stage.setStage(IoC.get(AbstractMainStage.class));
+      stage.set(IoC.get(AbstractMainStage.class));
     });
     
     return map;
@@ -55,35 +55,13 @@ public class AbstractAppLoadTask extends Task<AbstractMainStage> {
 
   public Runnable prepare() {
     return null;
-//    () -> {
-//      IoCFactoriesRegistrar.register();
-//    };
-  }
-
-  class StageWaiter extends Semaphore {
-
-    AbstractMainStage stage;
-
-    public StageWaiter() {
-      super(0);
-    }
-
-    public AbstractMainStage getValue() {
-      return stage;
-    }
-
-    public void setStage(AbstractMainStage stage) {
-      this.stage = stage;
-      release();
-    }
-
   }
 
   class ObservableStage extends ObservableValueBase<AbstractMainStage> {
 
     AbstractMainStage stage;
 
-    void setStage(AbstractMainStage stage) {
+    public void set(AbstractMainStage stage) {
       this.stage = stage;
     }
 

@@ -25,6 +25,7 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
 
   public AbstractTaskManager(NotificationPane notificationPane) {
     super();
+    setText("");
     this.notificationPane = notificationPane;
   }
 
@@ -47,6 +48,7 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
 
         case SUCCEEDED:
         case CANCELLED:
+          msg = "";
           break;
 
         case FAILED:

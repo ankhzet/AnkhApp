@@ -3,6 +3,7 @@ package ankh.http.cached;
 import ankh.cache.AbstractCache;
 import ankh.cache.Cache;
 import ankh.http.Response;
+import ankh.utils.Strings;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,7 +27,7 @@ public class ResponseCache extends AbstractCache<Response, Boolean> {
 
   @Override
   public String key(String id) {
-    return underlyingCache.key(id);
+    return Strings.trim(id.replaceAll("(?i)^https?://", ""), "/\\");
   }
 
   @Override
@@ -35,23 +36,23 @@ public class ResponseCache extends AbstractCache<Response, Boolean> {
   }
 
   public long length(String key) {
-    return underlyingCache.has(key);
+    return underlyingCache.has(key(key));
   }
 
   @Override
   public Response get(String key) throws IOException {
-    InputStream cache = underlyingCache.get(key);
+    InputStream cache = underlyingCache.get(key(key));
     if (cache == null)
       return null;
 
-    return responseFactory.create(this, key, cache);
+    return responseFactory.create(this, key(key), cache);
   }
 
   @Override
   public Response put(String key, Response response, long ttl) throws IOException {
     InputStream stream = response.getStream();
     if (stream != null) {
-      stream = underlyingCache.put(key, stream, ttl);
+      stream = underlyingCache.put(key(key), stream, ttl);
       if (stream != null)
         response = response.setStream(stream);
     }
@@ -66,7 +67,7 @@ public class ResponseCache extends AbstractCache<Response, Boolean> {
 
   @Override
   public void forget(String key) {
-    underlyingCache.forget(key);
+    underlyingCache.forget(key(key));
   }
 
 }

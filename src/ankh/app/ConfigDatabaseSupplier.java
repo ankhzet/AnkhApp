@@ -1,4 +1,4 @@
-package ankh;
+package ankh.app;
 
 import ankh.ioc.annotations.DependencyInjection;
 import ankh.app.AppConfig;
