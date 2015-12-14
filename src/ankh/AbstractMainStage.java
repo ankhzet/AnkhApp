@@ -11,7 +11,9 @@ import java.net.URL;
 import java.util.function.Supplier;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -20,6 +22,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -41,11 +44,14 @@ public class AbstractMainStage extends AbstractPageManager {
   protected BorderPane clientArea;
   private NotificationPane notifPane;
 
+  Drag drag;
+
   public AbstractMainStage() {
     this(((Supplier<NotificationPane>) () -> {
       NotificationPane pane = new NotificationPane();
       pane.setShowFromTop(false);
-      pane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+      pane.setCloseButtonVisible(false);
+      pane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 
       return pane;
     }).get());
@@ -101,7 +107,13 @@ public class AbstractMainStage extends AbstractPageManager {
     notifPane.setContent(layout);
 
     Scene scene = new Scene(new Underlay(notifPane));
+    scene.setFill(Color.TRANSPARENT);
     return scene;
+  }
+
+  public void close() {
+    if (stage != null)
+      stage.close();
   }
 
   public Stage constructStage() {
@@ -109,7 +121,14 @@ public class AbstractMainStage extends AbstractPageManager {
     stage.titleProperty().bind(titleProperty());
     stage.getIcons().addAll(new Image(AbstractApp.icon(32)), new Image(AbstractApp.icon(16)));
     stage.setScene(constructScene());
+
+    drag = new Drag(stage);
+    drag.monitor(stageDragNode());
     return stage;
+  }
+
+  public Node stageDragNode() {
+    return layout.topNode();
   }
 
   public void setRoot(Node node) {
@@ -156,6 +175,34 @@ public class AbstractMainStage extends AbstractPageManager {
     return title;
   }
 
+  private class Drag {
+
+    Point2D start;
+    Point2D origin;
+
+    Stage stage;
+
+    public Drag(Stage stage) {
+      this.stage = stage;
+    }
+
+    private void pick(double x, double y) {
+      origin = new Point2D(stage.getX(), stage.getY());
+      start = new Point2D(x, y);
+    }
+
+    private void move(double x, double y) {
+      stage.setX(origin.getX() + (x - start.getX()));
+      stage.setY(origin.getY() + (y - start.getY()));
+    }
+
+    public void monitor(Node node) {
+      node.setOnMousePressed(h -> pick(h.getScreenX(), h.getScreenY()));
+      node.setOnMouseDragged(h -> move(h.getScreenX(), h.getScreenY()));
+    }
+
+  }
+
 }
 
 class AppUILayout extends BorderPane {
@@ -194,9 +241,34 @@ class AppUILayout extends BorderPane {
 
 class Underlay extends StackPane {
 
+  Node innermost;
+
   public Underlay(Node innermost) {
+    this.innermost = innermost;
+
     Node container = new StackPane(innermost);
+
+    setId("underlay");
+    container.setId("container");
+
     getChildren().add(container);
+
+    innermost.layoutBoundsProperty()
+      .addListener((l, o, bounds) -> updateClipRect(bounds));
+  }
+
+  public double borderCorner() {
+    return 16.;
+  }
+
+  private void updateClipRect(Bounds bounds) {
+    Rectangle clip = new Rectangle(bounds.getWidth(), bounds.getHeight());
+
+    double corner = borderCorner();
+    clip.setArcHeight(corner);
+    clip.setArcWidth(corner);
+
+    innermost.setClip(clip);
   }
 
   @Override
