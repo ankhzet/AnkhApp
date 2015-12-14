@@ -7,14 +7,19 @@ import ankh.pages.AbstractPageManager;
 import ankh.tasks.NotificationPane;
 import ankh.config.Config;
 import com.sun.javafx.tk.Toolkit;
+import java.net.URL;
 import java.util.function.Supplier;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -32,6 +37,7 @@ public class AbstractMainStage extends AbstractPageManager {
 
   public Stage stage;
 
+  AppUILayout layout;
   protected BorderPane clientArea;
   private NotificationPane notifPane;
 
@@ -51,22 +57,55 @@ public class AbstractMainStage extends AbstractPageManager {
   }
 
   public Scene constructScene() {
-    BorderPane statusAndClient = new BorderPane();
-    statusAndClient.setBottom(this);
-
     clientArea = new BorderPane();
 
     clientArea.setPadding(new Insets(8));
     VBox.setVgrow(clientArea, Priority.ALWAYS);
-    statusAndClient.setCenter(clientArea);
 
-    notifPane.setContent(statusAndClient);
+    layout = new AppUILayout() {
+      Labeled titleNode;
+      Node topNode;
 
-    return new Scene(notifPane);
+      @Override
+      public Node topNode() {
+        if (topNode == null) {
+          titleNode = new Label();
+          titleNode.textProperty().bind(titleProperty());
+
+          Button close = new Button("X");
+          close.setOnAction(h -> close());
+
+          StackPane t = new StackPane(titleNode);
+          topNode = new HBox(t, new HBox(close));
+
+          HBox.setHgrow(t, Priority.ALWAYS);
+
+          topNode.setId("header");
+          titleNode.setId("title");
+        }
+        return topNode;
+      }
+
+      @Override
+      public Node centerNode() {
+        return clientArea;
+      }
+
+      @Override
+      public Node bottomNode() {
+        return AbstractMainStage.this;
+      }
+
+    };
+
+    notifPane.setContent(layout);
+
+    Scene scene = new Scene(new Underlay(notifPane));
+    return scene;
   }
 
   public Stage constructStage() {
-    stage = new Stage(StageStyle.DECORATED); //UNDECORATED
+    stage = new Stage(StageStyle.TRANSPARENT); //UNDECORATED
     stage.titleProperty().bind(titleProperty());
     stage.getIcons().addAll(new Image(AbstractApp.icon(32)), new Image(AbstractApp.icon(16)));
     stage.setScene(constructScene());
@@ -115,6 +154,61 @@ public class AbstractMainStage extends AbstractPageManager {
     if (title == null)
       title = new SimpleStringProperty(this, "title", application.appTitle());
     return title;
+  }
+
+}
+
+class AppUILayout extends BorderPane {
+
+  public AppUILayout() {
+    setTop(topNode());
+    setCenter(centerNode());
+    setBottom(bottomNode());
+  }
+
+  public Node topNode() {
+    return null;
+  }
+
+  public Node centerNode() {
+    return null;
+  }
+
+  public Node bottomNode() {
+    return null;
+  }
+
+  @Override
+  public String getUserAgentStylesheet() {
+    String styles;
+    URL stylesURL = getClass().getResource("style.css");
+    if (stylesURL == null)
+      styles = AbstractApp.resource("style.css");
+    else
+      styles = stylesURL.toString();
+
+    return styles;
+  }
+
+}
+
+class Underlay extends StackPane {
+
+  public Underlay(Node innermost) {
+    Node container = new StackPane(innermost);
+    getChildren().add(container);
+  }
+
+  @Override
+  public String getUserAgentStylesheet() {
+    String styles;
+    URL stylesURL = getClass().getResource("style.css");
+    if (stylesURL == null)
+      styles = AbstractApp.resource("style.css");
+    else
+      styles = stylesURL.toString();
+
+    return styles;
   }
 
 }
