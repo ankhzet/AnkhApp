@@ -1,6 +1,7 @@
 package ankh.pages.breadcrumps;
 
 import ankh.pages.Page;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -53,11 +54,21 @@ public class Breadcrumbs extends BreadCrumbBar<Breadcrumb> {
         }));
 
       setSelectedCrumb(last);
+      if (last != null)
+        last.getValue().action = null;
     });
   }
 
   public void push(Page page, Object[] args) {
     navPath.push(page, args);
+  }
+
+  public NavPathPoint<Page, Object[]> pop() {
+    return navPath.pop();
+  }
+
+  public int size() {
+    return navPath.size();
   }
 
   private PageNav navPath = new PageNav();
@@ -85,6 +96,27 @@ public class Breadcrumbs extends BreadCrumbBar<Breadcrumb> {
       }
 
       put(page, new NavPathPoint<>(page, args));
+    }
+
+    NavPathPoint<Page, Object[]> pop() {
+      ArrayList<Page> keys = new ArrayList<>(keySet());
+      if (keys.isEmpty())
+        return null;
+      else {
+        Page last = keys.get(keys.size() - 1);
+
+        PageNav copy = new PageNav(this);
+        clear();
+
+        NavPathPoint<Page, Object[]> pred = null;
+        for (Map.Entry<Page, NavPathPoint<Page, Object[]>> entry : copy.entrySet())
+          if (entry.getKey() == last)
+            break;
+          else
+            put(entry.getKey(), pred = entry.getValue());
+
+        return pred;
+      }
     }
 
   }
