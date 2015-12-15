@@ -1,5 +1,6 @@
 package ankh.utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -154,6 +155,15 @@ public class Utils {
 
     return Arrays.copyOf(list.toArray(), list.size(), clazz);
 
+  }
+
+  private static final DecimalFormat FS_FORMAT = new DecimalFormat("#,##0.#");
+  private static final String[] FS_POINTS = {" B", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"};
+
+  public static String humanReadableByteCount(long v) {
+    int leadingZeroes = (63 - Long.numberOfLeadingZeros(v)) / 10;
+    double trunc = (double) v / (double) (1L << (leadingZeroes * 10));
+    return FS_FORMAT.format(trunc) + FS_POINTS[leadingZeroes];
   }
 
 }
