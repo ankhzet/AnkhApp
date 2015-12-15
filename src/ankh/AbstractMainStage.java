@@ -14,6 +14,7 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -78,11 +79,10 @@ public class AbstractMainStage extends AbstractPageManager {
           titleNode = new Label();
           titleNode.textProperty().bind(titleProperty());
 
-          Button close = new Button("X");
-          close.setOnAction(h -> close());
-
           StackPane t = new StackPane(titleNode);
-          topNode = new HBox(t, new HBox(close));
+          HBox actions = new HBox(actionPane());
+          actions.setAlignment(Pos.CENTER_RIGHT);
+          topNode = new StackPane(t, actions);
 
           HBox.setHgrow(t, Priority.ALWAYS);
 
@@ -114,6 +114,16 @@ public class AbstractMainStage extends AbstractPageManager {
   public void close() {
     if (stage != null)
       stage.close();
+  }
+
+  public Pane actionPane() {
+    Button close = new Button("X");
+    close.setOnAction(h -> close());
+    close.getStyleClass().add("close");
+
+    HBox pane = new HBox(close);
+    pane.setId("actions");
+    return pane;
   }
 
   public Stage constructStage() {
