@@ -1,8 +1,6 @@
 package ankh.http.cached;
 
 import ankh.cache.Cache;
-import ankh.fs.cache.FileCache;
-import ankh.fs.cache.FileStreamCache;
 import ankh.http.Client;
 import ankh.http.Request;
 import ankh.http.Response;
@@ -16,18 +14,16 @@ import java.util.regex.Pattern;
  */
 public class CacheableClient extends Client {
 
-  ResponseCache cache;
+  Cache<Response, Boolean> cache;
 
-  String dir;
   long ttl;
 
   public void setTtl(long ttl) {
     this.ttl = ttl;
   }
 
-  public void setDir(String dir) {
-    this.dir = dir;
-    this.cache = new ResponseCache(new FileStreamCache(new FileCache(dir)), new CachedResponseFactory());
+  public void setCache(Cache<Response, Boolean> cache) {
+    this.cache = cache;
   }
 
   @Override

@@ -16,9 +16,21 @@ public class ResponseCache extends AbstractCache<Response, Boolean> {
   Cache<InputStream, Long> underlyingCache;
   ResponseFactory responseFactory;
 
-  public ResponseCache(Cache<InputStream, Long> underlyingCache, ResponseFactory responseFactory) {
-    this.underlyingCache = underlyingCache;
+  public ResponseCache() {
+    this(new CachedResponseFactory());
+  }
+
+  public ResponseCache(ResponseFactory responseFactory) {
     this.responseFactory = responseFactory;
+  }
+
+  public ResponseCache(Cache<InputStream, Long> underlyingCache) {
+    this();
+    this.underlyingCache = underlyingCache;
+  }
+
+  public void setUnderlyingCache(Cache<InputStream, Long> underlyingCache) {
+    this.underlyingCache = underlyingCache;
   }
 
   public void setResponseFactory(ResponseFactory responseFactory) {
