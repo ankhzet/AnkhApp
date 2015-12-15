@@ -11,20 +11,24 @@ import java.util.regex.Pattern;
 public class PatternRunner {
 
   static final HashMap<String, Pattern> patterns = new HashMap<>();
-  
+
   protected static String runPattern(String string, final String pattern, Replacer replacer) {
     Pattern p = patterns.get(pattern);
     if (p == null)
       patterns.put(pattern, p = Pattern.compile(pattern));
 
     Matcher m = p.matcher(string);
-    StringBuffer sb = new StringBuffer(string.length() * 2);
-    while (m.find())
-      m.appendReplacement(sb, replacer.replace(m).replace("$", "\\$"));
+    if (m.find()) {
+      StringBuffer sb = new StringBuffer(string.length() * 2);
 
-    m.appendTail(sb);
-
-    return sb.toString();
+      do {
+        m.appendReplacement(sb, replacer.replace(m).replace("$", "\\$"));
+      } while (m.find());
+      
+      m.appendTail(sb);
+      return sb.toString();
+    }
+    return string;
   }
 
   protected interface Replacer {
