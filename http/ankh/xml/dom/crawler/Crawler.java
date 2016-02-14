@@ -78,7 +78,7 @@ public class Crawler extends DomNodeList {
   public static DomNodeList xPath(Node node, String xpath) {
     try {
       NodeList nodes = (NodeList) xPath.evaluate(xpath, node, XPathConstants.NODESET);
-      return new DomNodeList(nodes).keepChilds(node);
+      return new DomNodeList(nodes);
     } catch (XPathExpressionException ex) {
       throw new RuntimeException(ex);
     }

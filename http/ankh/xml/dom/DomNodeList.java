@@ -23,14 +23,6 @@ public class DomNodeList extends ArrayList<Node> implements NodeList {
       add(c.item(i));
   }
 
-  public DomNodeList keepChilds(Node node) {
-    DomNodeList copy = (DomNodeList) this.clone();
-    copy.removeIf((child) -> {
-      short t = node.compareDocumentPosition(child);
-      return (t & Node.DOCUMENT_POSITION_CONTAINED_BY) == 0;
-    });
-    return copy;
-  }
 
   @Override
   public Node item(int index) {
