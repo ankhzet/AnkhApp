@@ -49,7 +49,7 @@ public abstract class AbstractServerRequest extends Request {
 
   public <T extends AbstractServerRequest> T resolve(Method method, String link, Object... args) {
     T request = instantiate((Class<T>) getClass(), method);
-    request.setUrl(request.apiURL(link, args));
+    request.setUrl(request.apiURL(link.replace("%", "%%"), args));
     return request;
   }
 
