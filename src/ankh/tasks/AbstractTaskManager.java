@@ -2,7 +2,10 @@ package ankh.tasks;
 
 import ankh.AbstractApp;
 import ankh.utils.D;
+import java.util.ArrayList;
 import java.util.function.Consumer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,6 +25,8 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
   static final Image alert = new Image(AbstractApp.resource("alert.png"));
 
   private final NotificationPane notificationPane;
+
+  private final ObservableList<Task<?>> tasks = FXCollections.observableArrayList();
 
   public AbstractTaskManager(NotificationPane notificationPane) {
     super();
@@ -56,10 +61,25 @@ public class AbstractTaskManager extends StatusBar implements TaskManager {
         }
         unbindStatusBar(msg, button);
       });
+
+      task.runningProperty().addListener((l, o, isRunning) -> {
+        if (isRunning)
+          tasks.add(task);
+        else
+          tasks.remove(task);
+      });
     });
 
     new Thread(task).start();
     return true;
+  }
+
+  public boolean cancelAllTasks() {
+    boolean ok = true;
+     // wrapped in ArrayList to avoid "Concurrent modification" exception
+    for (Task<?> task : new ArrayList<>(tasks))
+      ok &= task.cancel();
+    return ok;
   }
 
   void unbindStatusBar(String msg, Node remove) {

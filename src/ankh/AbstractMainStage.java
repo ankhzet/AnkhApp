@@ -167,6 +167,7 @@ public class AbstractMainStage extends AbstractPageManager {
 
   public void navigateOut() {
     IoC.drop();
+    cancelAllTasks();
   }
 
   private StringProperty title;
