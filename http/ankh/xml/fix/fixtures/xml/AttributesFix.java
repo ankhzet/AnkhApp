@@ -16,8 +16,8 @@ public class AttributesFix extends AbstractFixture {
       if (c.attributes != null) {
         String attributes = c.attributes;
         HashMap<Integer, String> hash = new HashMap<>();
-        attributes = runPattern(attributes, "\"([^\"]*)\"", m -> {
-          String value = m.group(1);
+        attributes = runPattern(attributes, "(?s)([\"'])(.*?)\\1", m -> {
+          String value = m.group(2);
           int i = hash.size() + 1;
           hash.put(i, value);
           return String.format("{!{%d}}", i);

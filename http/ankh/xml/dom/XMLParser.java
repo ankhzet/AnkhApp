@@ -195,8 +195,9 @@ public class XMLParser {
       case '>':
         r.reset();
         return i;
+      case '\'':
       case '"':
-        int j = seek(r, "\"");
+        int j = seek(r, String.valueOf((char)c));
         if (j <= 0)
 //          r.reset();
           return i;
