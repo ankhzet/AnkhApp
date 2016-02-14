@@ -8,6 +8,6 @@ import ankh.xml.dom.Node;
  */
 public interface Fixture {
 
-  Node apply(Node node);
+  Node applyFixture(Node node);
 
 }

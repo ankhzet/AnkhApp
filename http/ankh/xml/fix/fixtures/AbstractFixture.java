@@ -15,7 +15,14 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractFixture extends PatternRunner implements Fixture {
 
+  public abstract Node apply(Node node);
+
   Set<Node> rec = new HashSet<>();
+
+  public Node applyFixture(Node node) {
+    rec = new HashSet<>();
+    return apply(node);
+  }
 
   protected static Node ifTextNode(Node node, NodeTransformer<TextNode> t) {
     if (node instanceof TextNode)

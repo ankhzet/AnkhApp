@@ -12,7 +12,7 @@ public class Fixer extends ArrayList<Fixture> {
 
   public Node fix(Node root) {
     for (Fixture fix : this)
-      root = fix.apply(root);
+      root = fix.applyFixture(root);
 
     return root;
   }
