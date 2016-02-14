@@ -13,7 +13,7 @@ public class AttributesFix extends AbstractFixture {
   @Override
   public Node apply(Node node) {
     return recursive(node, c -> {
-      if (c.attributes != null) {
+      if (c.attributes != null && !c.attributes.isEmpty()) {
         String attributes = c.attributes;
         HashMap<Integer, String> hash = new HashMap<>();
         attributes = runPattern(attributes, "(?s)([\"'])(.*?)\\1", m -> {

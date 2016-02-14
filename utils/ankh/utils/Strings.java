@@ -82,6 +82,9 @@ public class Strings extends ArrayList<String> {
   }
 
   public static String trimr(String input, String chars) {
+    if (input == null || input.isEmpty())
+      return input;
+
     Pattern p = Pattern.compile(String.format("[%s]*$", Pattern.quote(chars)));
     Matcher m = p.matcher(input);
     if (m.find())

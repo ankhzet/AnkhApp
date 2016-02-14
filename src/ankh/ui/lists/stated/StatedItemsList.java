@@ -24,7 +24,7 @@ public abstract class StatedItemsList<Item, Stated extends StatedItem<? extends 
   public StatedItemsList(ObservableList<? extends Item> c) {
     this();
     addAllItems(c);
-    c.addListener((ListChangeListener<Item>) change -> synk(c));
+    c.addListener((ListChangeListener<Item>) change -> synk(change.getList()));
   }
 
   private void synk(ObservableList<? extends Item> l) {
@@ -38,11 +38,17 @@ public abstract class StatedItemsList<Item, Stated extends StatedItem<? extends 
         n.remove(i);
     }
 
-    if (d.size() > 0)
-      removeAll(d);
+    beginChange();
+    try {
+      if (d.size() > 0)
+        removeAll(d);
 
-    if (n.size() > 0)
-      addAllItems(n);
+      if (n.size() > 0)
+        for (Item item : n)
+          add(l.indexOf(item), newStated(item));
+    } finally {
+      endChange();
+    }
   }
 
   public final void addAllItems(Collection<? extends Item> c) {
@@ -87,6 +93,20 @@ public abstract class StatedItemsList<Item, Stated extends StatedItem<? extends 
       endChange();
     }
   }
+
+  @Override
+  public Stated set(int index, Stated element) {
+    beginChange();
+    try {
+      Stated s = backingArray.set(index, element);
+      nextSet(index, s);
+      return s;
+    } finally {
+      endChange();
+    }
+  }
+  
+  
 
   public Stated stated(Item item) {
     for (Stated stated : this)

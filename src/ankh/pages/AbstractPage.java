@@ -74,7 +74,6 @@ public abstract class AbstractPage implements Page, TaskManager {
 
   @Override
   public boolean navigateOut(Page to) {
-    dissmissNotifier();
     done();
     node = null;
     navData = null;

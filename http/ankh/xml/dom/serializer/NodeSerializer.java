@@ -1,8 +1,6 @@
 package ankh.xml.dom.serializer;
 
 import ankh.xml.dom.EntityUtils;
-import java.util.HashSet;
-import java.util.Set;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,35 +11,11 @@ import org.w3c.dom.NodeList;
  */
 public class NodeSerializer {
 
-  static final String key = NodeSerializer.class.getSimpleName();
+  static final String noContentTags = "|br|img|";
 
-  static final Set<String> noContentTags = new HashSet<String>() {
-    {
-      add("br");
-      add("img");
-    }
-  };
+  static final String inlineTags = "|i|b|s|sup|sub|a|img|";
 
-  static final Set<String> inlineTags = new HashSet<String>() {
-    {
-      add("i");
-      add("b");
-      add("s");
-      add("sup");
-      add("sub");
-      add("a");
-      add("img");
-    }
-  };
-
-  static final Set<String> dontSkipAttribute = new HashSet<String>() {
-    {
-      add("style");
-      add("href");
-      add("src");
-      add("lang");
-    }
-  };
+  static final String dontSkipAttribute = "|style|href|src|lang|";
 
   public String serialize(Node node) {
     StringBuilder sb = new StringBuilder();
@@ -90,11 +64,11 @@ public class NodeSerializer {
   }
 
   protected boolean noContent(Node node) {
-    return noContentTags.contains(tag(node));
+    return noContentTags.contains("|" + tag(node) + "|");
   }
 
   protected boolean noAttribute(Node node, String name) {
-    return !dontSkipAttribute.contains(name) || name.startsWith("data-");
+    return !dontSkipAttribute.contains("|" + name + "|") || name.startsWith("data-");
   }
 
   void flatenAttributes(StringBuilder sb, NamedNodeMap attr) {
@@ -110,7 +84,7 @@ public class NodeSerializer {
   }
 
   boolean isInlineTag(Node node) {
-    return inlineTags.contains(tag(node));
+    return inlineTags.contains("|" + tag(node) + "|");
   }
 
   boolean isTextNode(Node node) {

@@ -30,7 +30,12 @@ public class ConfigNode extends HashMap<String, Object> {
 
   public <T> T get(String key, T def) {
     Object value = get(key);
-    return (value != null) ? (T) value : def;
+    if (value == null)
+      return def;
+    if (value instanceof String)
+      if (((String) value).isEmpty())
+        return def;
+    return (T) value;
   }
 
   public Object get(String key) {
@@ -92,8 +97,11 @@ public class ConfigNode extends HashMap<String, Object> {
           put(node, decode(p.Token));
           p.nextAndCheck(";");
           p.next();
-        } else
-          put(node, new Config(p));
+        } else {
+          ConfigNode child = new ConfigNode(this);
+          child.readFromParser(p);
+          put(node, child);
+        }
 
       } while (true);
 
@@ -127,7 +135,8 @@ public class ConfigNode extends HashMap<String, Object> {
         .append(key);
 
       if (value instanceof ConfigNode)
-        sb.append(tab(value.toString()));
+        sb.append(" ")
+          .append(tab(value.toString()));
       else
         sb.append(" = ")
           .append(encode(value))
@@ -153,7 +162,7 @@ public class ConfigNode extends HashMap<String, Object> {
     if (value instanceof String)
       return '"' + (String) value + '"';
 
-    return " = " + value.toString() + ";";
+    return value.toString();
   }
 
   Object decode(String value) {

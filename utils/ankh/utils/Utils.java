@@ -99,7 +99,7 @@ public class Utils {
   }
 
   public static <Type> Type isAnyAt(int at, Object[] array, Supplier<Type> def) {
-    return (array.length > at) ? (Type) array[at] : (def != null ? def.get() : null);
+    return (array != null && array.length > at) ? (Type) array[at] : (def != null ? def.get() : null);
   }
 
   public static int constraint(int value, int min, int max) {

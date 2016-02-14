@@ -37,7 +37,7 @@ public class Crawler extends DomNodeList {
 
   public Crawler remove(String xpath) {
     Crawler result = filter(xpath);
-    for (Node node : this)
+    for (Node node : result)
       node.getParentNode().removeChild(node);
     return result;
   }

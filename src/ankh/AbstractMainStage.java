@@ -155,6 +155,7 @@ public class AbstractMainStage extends AbstractPageManager {
 
   @Override
   public boolean navigateTo(Class<? extends Page> id, Object... args) {
+    System.gc();
     boolean navigated = super.navigateTo(id, args);
     if (navigated) {
       Page current = getCurrent();

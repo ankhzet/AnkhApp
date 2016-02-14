@@ -3,6 +3,7 @@ package ankh.xml.dom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -22,7 +23,6 @@ public class Node implements Iterable<Node> {
   boolean unary;
 
   private boolean closed = false;
-  private boolean close = true;
 
   String source;
   public String tag;
@@ -60,7 +60,6 @@ public class Node implements Iterable<Node> {
 
   public void close() {
     closed = true;
-//    unary = false;
   }
 
   public boolean isUnary() {
@@ -98,13 +97,9 @@ public class Node implements Iterable<Node> {
     if (tag == null)
       return contents();
 
-    String t = tag;
-//    if (!(closed || unary))
-//      t = "!" + t + "!";
-
     return String.format(
       "<%s%s%s>%s",
-      t,
+      tag,
       (attributes != null) ? attributes : S_EMPTY,
       unaryTag(),
       rest()
@@ -147,7 +142,7 @@ public class Node implements Iterable<Node> {
   public void setContents(String contents) {
     this.contents = contents;
     if (childs != null)
-      childs.clear();
+      childs = null;
   }
 
   String unaryTag() {
@@ -158,16 +153,28 @@ public class Node implements Iterable<Node> {
   }
 
   String closedTag() {
-    String t = close ? "</" + tag + ">" : S_EMPTY;
-
-//    if (!(closed || unary))
-//      t = "!" + t + "!";
-    return t;
+    return "</" + tag + ">";
   }
 
   @Override
   public Iterator<Node> iterator() {
-    return (childs != null) ? childs.iterator() : (new ArrayList<Node>()).iterator();
+    return (childs != null) ? childs.iterator() : emptyIter;
+  }
+
+  private static final EmptyIterator<Node> emptyIter = new EmptyIterator<>();
+
+}
+
+class EmptyIterator<T> implements Iterator<T> {
+
+  @Override
+  public boolean hasNext() {
+    return false;
+  }
+
+  @Override
+  public T next() {
+    throw new NoSuchElementException();
   }
 
 }

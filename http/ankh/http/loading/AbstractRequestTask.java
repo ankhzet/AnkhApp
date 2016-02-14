@@ -35,7 +35,7 @@ public abstract class AbstractRequestTask<Source, Resource> extends Task<Resourc
     if (result == null) {
       resourceQuery.rethrow();
 
-      throw new Exception("Request failed");
+      throw new Exception("Request failed: Resource not found at specified location");
     }
 
     return result;

@@ -25,16 +25,19 @@ public abstract class AbstractPageManager extends AbstractTaskManager implements
 
     to.setNavigator(this);
     to.setTaskManager(this);
+
+    dissmissNotifier();
+
+    if (!to.navigateIn(current, args))
+      return false;
+
     if (current != null)
       if (!current.navigateOut(to))
         return false;
 
-    if (to.navigateIn(current, args)) {
-      current = to;
-      return true;
-    }
+    current = to;
 
-    return false;
+    return true;
   }
 
   public Page getCurrent() {
