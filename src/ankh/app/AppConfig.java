@@ -80,5 +80,30 @@ public class AppConfig extends Config {
       readFromParser(new Parser(path));
     }
   }
+  
+  public String getApiCacheDir(String... def) {
+    return get(C_API_CACHE_DIR, def.length > 0 ? def[0] : null);
+  }
+
+  private static final String C_API_PROXY = "api.proxy";
+  private static final String C_API_SERVER = "api.server.url";
+  private static final String C_API_CACHE_DIR = "api.cache.dir";
+  private static final String C_API_CACHE_TTL = "api.cache.ttl";
+
+  public ConvertableProperty apiProxyProperty() {
+    return property(C_API_PROXY);
+  }
+
+  public ConvertableProperty apiServerProperty() {
+    return property(C_API_SERVER);
+  }
+
+  public ConvertableProperty apiCacheDirProperty(String... def) {
+    return property(C_API_CACHE_DIR, def);
+  }
+
+  public ConvertableProperty apiCacheTtlProperty(String... def) {
+    return property(C_API_CACHE_TTL, def);
+  }
 
 }

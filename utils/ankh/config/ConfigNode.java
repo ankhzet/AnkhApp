@@ -20,10 +20,6 @@ public class ConfigNode extends HashMap<String, Object> {
     this.parent = parent;
   }
 
-  public ConfigNode(Parser parser) {
-    readFromParser(parser);
-  }
-
   public boolean has(String key) {
     return get(key) != null;
   }
